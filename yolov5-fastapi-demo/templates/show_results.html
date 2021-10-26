@@ -1,0 +1,151 @@
+{% extends "layout.html" %} {% block content %}
+<div class="container">
+  <iframe name="dummyframe" id="dummyframe" style="display: none"></iframe>
+  {% if bbox_data_str is not none %}
+  <form onsubmit="download('results.csv', '{{ bbox_data_str }}')" target="dummyframe">
+    <h2>Results</h2>
+    <input class="btn btn-primary" type="submit" value="Download Results" />
+  </form>
+  <div class="row align-items-start">
+    <div class="col">
+
+      <h4 class="mt-4">{{container_name}}</h4>
+      {% else %}
+      <h2>Results</h2>
+      <div class="alert alert-warning d-inline-flex align-items-center" role="alert">
+        <div>
+          Cannot Detect QR Code
+        </div>
+      </div>
+      {% endif %}
+
+      {% for img_base64 in bbox_image_data_zipped %}
+      <!--Display base64 encoded image, scale image so it fits browser window horizontally -->
+      <img src="data:image/jpeg;charset=utf-8;base64,{{ img_base64 }}" id="result_image"
+        style="max-width: 100%; height: auto; width: auto\9" class="rounded mx-auto d-block" />
+
+    </div>
+    <div class="container">
+      <div class="row align-items-start">
+        <div class="col">
+          <h5 class="mt-4">Histogram</h5>
+          <div id="myDiv"></div>
+        </div>
+        <div class="col">
+          <h5 class="mt-4">Percentage</h5>
+          <div id="myPie"></div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <hr />
+</div>
+
+<script>
+  // from https://stackoverflow.com/questions/3665115/how-to-create-a-file-in-memory-for-user-to-download-but-not-through-server/18197341#18197341
+  function download(filename, text) {
+    var element = document.createElement("a");
+    element.setAttribute(
+      "href",
+      "data:text/plain;charset=utf-8," + encodeURIComponent(text)
+    );
+    element.setAttribute("download", filename);
+
+    element.style.display = "none";
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+  }
+</script>
+
+<script>
+  const ctx = document.getElementById('histogram').getContext('2d');
+
+  const chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      // min weight to max weight
+      labels: [0, 250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000, 3500],
+      datasets: [{
+        label: 'Number of Konjacs',
+        data: {{ weight }},
+    backgroundColor: 'green',
+  }]
+      },
+  options: {
+    scales: {
+      xAxes: [{
+        display: false,
+        barPercentage: 1.3,
+        ticks: {
+          max: 3,
+        }
+      }, {
+        display: true,
+        ticks: {
+          autoSkip: false,
+          max: 4,
+        }
+      }],
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+    }
+  }
+    });
+</script>
+
+<script>
+  var x = {{ weight }};
+  var trace1 = {
+    x: x,
+    type: 'histogram',
+  };
+  var trace2 = {
+    x: x,
+    type: 'histogram',
+  };
+  var data = [trace1];
+  var layout = {
+    bargap: 0.05,
+    // bargroupgap: 0.2,
+    barmode: "stack",
+    title: "Weight Estimation Results",
+    xaxis: { title: "Weight (g)" },
+    yaxis: { title: "Number of Konjac" },
+  };
+  Plotly.newPlot('myDiv', data, layout);
+</script>
+
+<script>
+  var weights = {{ weight }};
+  const total = weights.length;
+  const small = weights.filter(weight => weight < 500);
+  const small_percent = small.length;
+  const medium = weights.filter(weight => weight > 500 && weight < 1000);
+  const medium_percent = medium.length;
+  const large = weights.filter(weight => weight > 1000 && weight < 2000);
+  const large_percent = large.length;
+
+  var data = [{
+    type: "pie",
+    values: [small_percent, medium_percent, large_percent],
+    labels: ["Small「< 500g.」", "Medium「< 1000g.」", "Large「>= 1000g.」"],
+    textinfo: "label+percent",
+    insidetextorientation: "radial"
+  }];
+
+  var layout = [{
+    height: 300,
+    width: 300
+  }]
+
+  Plotly.newPlot('myPie', data, layout)
+</script>
+
+{% endblock %}

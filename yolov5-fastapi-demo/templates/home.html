@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h5>Upload image(s)</h5>
+
+<hr/>
+
+<form method="post" action="" enctype="multipart/form-data">
+  <div class="form-row">
+  	<div class="form-group col-md-2">
+      <label>Upload Image(s)</label>
+    </div>
+    <input name="file_list" type="file" multiple>
+  </div>
+  <!-- <div class="form-row">
+    <div class="form-group col-md-2">
+      <label>Select YOLO Model</label>
+    </div>
+    <div class="form-group col-md-2">
+      <select class="form-control form-control-sm" name="model_name">
+      {% for selection in model_selection_options %}
+        <option>{{ selection }}</option>
+      {% endfor %}
+      </select>
+    </div>
+  </div> -->
+  <div class="form-row">
+    <div class="form-group col-md-2">
+      <label>Model Inference Size</label>
+    </div>
+    <div class="form-group col-md-2">
+      <input type="text" class="form-control" name="img_size" value="640">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-2">
+      <label>Calibrator Reference Size (cm)</label>
+    </div>
+    <div class="form-group col-md-2">
+      <input type="text" class="form-control" name="ref_size" value="10">
+    </div>
+  </div>
+
+  <button class="btn btn-primary" type="submit">Submit</button>
+</form>
+
+{% endblock %}
