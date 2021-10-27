@@ -1,14 +1,14 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h5>Upload image(s)</h5>
+<h5>画像をアップロードしてください</h5>
 
 <hr/>
 
 <form method="post" action="" enctype="multipart/form-data">
   <div class="form-row">
   	<div class="form-group col-md-2">
-      <label>Upload Image(s)</label>
+      <label>選択画像</label>
     </div>
     <input name="file_list" type="file" multiple>
   </div>
@@ -34,14 +34,14 @@
   </div>
   <div class="form-row">
     <div class="form-group col-md-2">
-      <label>Calibrator Reference Size (cm)</label>
+      <label>QRコードの長さ（CM)</label>
     </div>
     <div class="form-group col-md-2">
       <input type="text" class="form-control" name="ref_size" value="10">
     </div>
   </div>
 
-  <button class="btn btn-primary" type="submit">Submit</button>
+  <button class="btn btn-primary" type="submit">提出する</button>
 </form>
 
 {% endblock %}
